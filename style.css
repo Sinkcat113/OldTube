@@ -1,0 +1,173 @@
+html {
+    font-family: sans-serif;
+}
+body {
+    margin-left: auto;
+    margin-right: auto;
+    width: 800px;
+    background-image: url("https://s3.envato.com/files/103536582/image_preview/03_gray_backgrounds.jpg");
+}
+nav {
+    background-color: rgb(174, 205, 255);
+    background-image: linear-gradient(rgb(255, 255, 255), rgb(158, 214, 251));
+    border-style: groove;
+    border-color: rgb(139, 167, 201);
+    border-width: 1px;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-radius: 7px;
+}
+.top {
+    display: flex;
+    margin-bottom: 6px;
+}
+.searchContainer {
+    padding: 5px;
+    background-color: rgb(174, 174, 174);
+}
+.logo {
+    object-fit: cover;
+    width: 80px;
+    height: 30px;
+    margin-right: 12px;
+}
+h4 {
+    margin: 0;
+    font-weight: 900;
+}
+.title {
+    background-image: linear-gradient(rgb(216, 216, 216), rgb(243, 243, 243));
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 12px;
+    border-style: groove;
+    border-color: rgb(233, 233, 233);
+    border-width: 2px;
+    display: block;
+}
+h5 {
+    margin: 0;
+}
+.newVideosContainer {
+    display: flex;
+    margin-top: 5px;
+}
+.randomVideosContainer {
+    margin-top: 5px;
+    display: inline-block;
+}
+.video {
+    display: inline-block;
+    padding: 5px;
+    background-color: white;
+    width: 100px;
+}
+.thumbnail {
+    width: 100px;
+    height: 60px;
+}
+.videoTitle {
+    font-weight: 750;
+    margin: 0;
+    font-size: 12px;
+    color: rgb(72, 99, 255);
+    cursor: pointer;
+}
+.videoTitle:hover {
+    text-decoration: underline;
+}
+.navInput {
+    outline: none;
+    border-radius: 0;
+    border-style: solid;
+}
+.navButton {
+    cursor: pointer;
+    border-width: 1px;
+    border-radius: 4px;
+    color: rgb(53, 60, 80);
+    font-weight: 700;
+    background-image: linear-gradient(rgb(249, 249, 255), rgb(198, 198, 255), rgb(180, 180, 255));
+}
+.navButton:hover {
+    text-decoration: underline;
+    background-image: linear-gradient(rgb(249, 249, 255), rgb(215, 215, 255), rgb(118, 118, 235));
+}
+.videoUploader {
+    margin: 0;
+    font-size: 10px;
+    color: gray;
+}
+dialog {
+    width: 900px;
+    height: 100%;
+    border-radius: 0;
+    border-style: none;
+    outline: none;
+    overflow-y: scroll;
+}
+dialog::backdrop {
+    display: none;
+}
+#btnFile {
+    margin-top: 12px;
+    width: 300px;
+    border-style: groove;
+    border-radius: 12px;
+    cursor: pointer;
+}
+.textInfo {
+    margin-top: 12px;
+}
+.player {
+    width: 100%;
+    display: inline-block;
+}
+a {
+    outline: none;
+}
+#btnComment {
+    border-style: groove;
+    border-width: 1px;
+    border-radius: 3px;
+    background-image: linear-gradient(rgb(244, 223, 174), rgb(240, 171, 42));
+    color: rgb(42, 31, 10);
+    font-weight: 700;
+    cursor: pointer;
+    padding: 3px;
+}
+#btnComment:hover {
+    background-image: linear-gradient(rgb(237, 157, 53), rgb(225, 139, 64), rgb(255, 215, 140));
+}
+#btnStart{
+    border-style: groove;
+    border-width: 1px;
+    border-radius: 3px;
+    background-image: linear-gradient(rgb(244, 223, 174), rgb(240, 171, 42));
+    color: rgb(42, 31, 10);
+    font-weight: 700;
+    cursor: pointer;
+    padding: 3px;
+}
+#btnStart:hover {
+    background-image: linear-gradient(rgb(237, 157, 53), rgb(225, 139, 64), rgb(255, 215, 140));
+}
+
+#btnPost{
+    border-style: groove;
+    border-width: 1px;
+    border-radius: 3px;
+    background-image: linear-gradient(rgb(244, 223, 174), rgb(240, 171, 42));
+    color: rgb(42, 31, 10);
+    font-weight: 700;
+    cursor: pointer;
+    padding: 3px;
+}
+#btnPost:hover {
+    background-image: linear-gradient(rgb(237, 157, 53), rgb(225, 139, 64), rgb(255, 215, 140));
+}
+
+.playerControls {
+    background-image: linear-gradient(rgb(12, 12, 12), rgb(76, 76, 76));
+}

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OldTube</title>
+    <link rel="shortcut icon" href="oldTube.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <meta property="og:title" content="OldTube" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://www.oldtube.net/oldTube.png" />
+    <meta property="og:url" content="https://www.oldtube.net" />
+    <meta property="og:description" content="Relive web 1.0 video sharing" />
+</head>
+<body>
+    <div class="top">
+        <img class="logo" src="oldTube.png" alt="">
+        <div class="searchContainer">
+            <input id="txtSearch" class="navInput" type="search" placeholder="Search...">
+            <button class="navButton" id="btnSearch">Search</button>
+            <button class="navButton" id="btnUpload">Upload</button>
+        </div>
+    </div>
+    <nav>
+        <h4>Home</h4>
+    </nav>
+    <div style="float: left; width: 590px;">
+        <div class="title">
+            <h5>Newest Videos</h5>
+            <div class="newVideosContainer">
+                <!--
+                <div class="video">
+                    <video class="thumbnail" src=""></video>
+                    <h5 class="videoTitle">Example Video</h5>
+                    <p class="videoUploader">Sinkcat</p>
+                </div>
+                -->
+            </div>
+        </div>
+        <div class="title">
+            <h5>Random Videos</h5>
+            <div class="randomVideosContainer">
+                <!--
+                <div class="video">
+                    <video class="thumbnail" src=""></video>
+                    <h5 class="videoTitle">Example Video</h5>
+                    <p class="videoUploader">Sinkcat</p>
+                </div>
+                -->
+            </div>
+        </div>
+    </div>
+    <div style="float: right; width: 200px;">
+        <div class="title">
+            <h5>Join the guest list</h5>
+            <div class="guestListControl">
+                <input type="text" id="txtGuestName" placeholder="Name">
+                <textarea style="font-family: sans-serif; resize: vertical;" id="txtMessage" cols="22" rows="3" placeholder="Message"></textarea>
+                <button id="btnPost">Post</button>
+            </div>
+        </div>
+        <div class="title">
+            <h5>Guest list</h5>
+            <div style="background-color: white;" class="guestList">
+
+            </div>
+        </div>
+    </div>
+    <dialog id="diUpload">
+        <div class="top">
+            <img class="logo" src="oldTube.png" alt="">
+        </div>
+        <nav>
+            <h4>Upload</h4>
+        </nav>
+        <button id="btnFile">Choose Video File</button>
+        <div class="textInfo">
+            <label for="txtTitle">Title: </label>
+            <br>
+            <input type="text" id="txtTitle" placeholder="Video Title">
+            <br>
+            <br>
+            <label for="txtUploader">Uploader: </label>
+            <br>
+            <input type="text" id="txtUploader" placeholder="Your Name">
+            <br>
+            <br>
+            <label for="txtDesc">Description: </label>
+            <br>
+            <textarea style="font-family: sans-serif;" name="" id="txtDesc" cols="30" rows="7" placeholder="Vidoe Description"></textarea>
+            <br>
+            <button id="btnStart">Upload</button>
+            <br>
+            <br>
+            <a id="btnCancel" href="index.html">Cancel upload</a>
+        </div>
+    </dialog>
+    <dialog id="diViewer">
+        <div style="display: flex;">
+            <div style="float: left;">
+                <div class="top">
+                    <img class="logo" src="oldTube.png" alt="">
+                </div>
+                <a href="index.html"><-- Exit</a>
+                <br>
+                <video class="player" id="videoPlayer"></video>
+                <div class="playerControls" style="color: white;">
+                    <div style="padding-right: 8px; display: inline-block; background-image: linear-gradient(rgb(103, 103, 103), rgb(70, 70, 70));">
+                        <p id="btnPlay" style="font-size: 12px; margin: 0; padding-top: 0; padding: 2px; padding-left: 10px; padding-right: 4px; cursor: pointer;">▶</p>
+                    </div>
+                    <span><progress id="scrubBar" style="width: 89.8%;"></progress></span>
+                    <div style="padding-right: 8px; display: inline-block; background-image: linear-gradient(rgb(103, 103, 103), rgb(70, 70, 70));">
+                        <p id="btnFullScreen" style="font-size: 12px; margin: 0; padding-top: 0; padding: 2px; padding-left: 10px; padding-right: 4px; cursor: pointer;"><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#ffffff}</style><path d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64V352zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H320c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V352z"/></svg></p>
+                    </div>
+                </div>
+                <br>
+                <h4 style="display: inline-block;" id="playerTitle"></h4>
+                <br>
+                <p style="margin: 0; display: inline-block;" id="playerUploader"></p>
+                <br>
+                <br>
+                <p style="display: inline-block; margin: 0;" id="playerDescription"></p>
+                <br>
+                <br>
+                <br>
+                <div class="comments">
+                    <h4>
+                        Comments
+                    </h4>
+                    <div class="commentControls">
+                        <input type="text" id="txtUsername" placeholder="Name">
+                        <br>
+                        <br>
+                        <textarea style="font-family: sans-serif; resize: vertical;" id="txtComment" placeholder="Comment" cols="100" rows="2"></textarea>
+                        <br>
+                        <button id="btnComment">Comment</button>
+                        <br>
+                        <div style="margin-top: 20px;" class="commentSection">   
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="float: right; margin-right: 0px; margin-left: 12px; margin-top: 50px;">
+                <h4 style="display: inline-block;">
+                    More Videos
+                </h4>
+                <div class="playerVideos">
+                    
+                </div>    
+            </div>
+        </div>
+    </dialog>
+    <dialog id="diSearch">
+        <div>
+            <div class="top">
+                <img class="logo" src="oldTube.png" alt="">
+            </div>
+            <a href="index.html"><-- Exit</a>
+            <h4>
+                SearchResults
+            </h4>
+            <div class="searchVideos">
+    
+            </div>
+        </div>
+    </dialog>
+    <div style="margin-left: 200px; margin-right: 200px;">
+        <p style="color: gray; text-align: center;">©️ OldTube 2023</p>
+        <p style="color: gray; text-align: center;">OldTube is a project started by a high school student to bring back the old aesthetic of youtube from the early to mid 2000s</p>
+    </div>
+    <script type="module" src="index.js"></script>
+</body> 
+</html>
