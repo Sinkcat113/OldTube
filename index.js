@@ -2,7 +2,7 @@ if (window.innerWidth < 600) {
     document.body.innerText = "OldTube is best viewed on a desktop computer"
 }
 
-import { subscribed, likedVideos, diLikes, diSubscriptions, btnLikes, btnDislike, btnLike, btnFullScreen, scrubBar, btnPlay, guestList, btnPost, txtGuestName, txtMessage, diViewer, diUpload, btnUpload, btnFile, txtTitle, txtDesc, txtUploader, btnStart, btnCancel, newVideosContainer, randomVideosContainer, videoPlayer, playerTitle, playerUploader, playerVideos, diSearch, searchVideos, txtSearch, btnSearch, txtComment, txtUsername, btnComment, commentSection, playerDescription } from "./references.js"
+import { txtViews, subscribed, likedVideos, diLikes, diSubscriptions, btnLikes, btnDislike, btnLike, btnFullScreen, scrubBar, btnPlay, guestList, btnPost, txtGuestName, txtMessage, diViewer, diUpload, btnUpload, btnFile, txtTitle, txtDesc, txtUploader, btnStart, btnCancel, newVideosContainer, randomVideosContainer, videoPlayer, playerTitle, playerUploader, playerVideos, diSearch, searchVideos, txtSearch, btnSearch, txtComment, txtUsername, btnComment, commentSection, playerDescription } from "./references.js"
 
 btnUpload.addEventListener("click", () => {
     diUpload.showModal() 
@@ -433,6 +433,29 @@ function getRandom() {
 }
 
 function getLikes() {
+
+    // add views
+
+    onAuthStateChanged(auth, (user) => {
+        update(ref(db, "Videos/" + currentVideo + "/Views/" + user.uid), {
+            UID: user.uid
+        })
+    })
+
+    // get views
+
+    var views = 0
+
+    get(ref(db, "Videos/" + currentVideo + "/Views")).then((snap) => {
+        snap.forEach(() => {
+            views += 1
+        })
+    }).then(() => {
+        txtViews.innerText = `${views} Views`
+    })
+
+    // get likes
+
     var likes = 0
 
     get(ref(db, "Videos/" + currentVideo + "/Likes")).then((snap) => {
