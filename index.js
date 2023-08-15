@@ -2,7 +2,7 @@ if (window.innerWidth < 600) {
     document.body.innerText = "OldTube is best viewed on a desktop computer"
 }
 
-import { btnDislike, btnLike, btnFullScreen, scrubBar, btnPlay, guestList, btnPost, txtGuestName, txtMessage, diViewer, diUpload, btnUpload, btnFile, txtTitle, txtDesc, txtUploader, btnStart, btnCancel, newVideosContainer, randomVideosContainer, videoPlayer, playerTitle, playerUploader, playerVideos, diSearch, searchVideos, txtSearch, btnSearch, txtComment, txtUsername, btnComment, commentSection, playerDescription } from "./references.js"
+import { subscribed, likedVideos, diLikes, diSubscriptions, btnLikes, btnDislike, btnLike, btnFullScreen, scrubBar, btnPlay, guestList, btnPost, txtGuestName, txtMessage, diViewer, diUpload, btnUpload, btnFile, txtTitle, txtDesc, txtUploader, btnStart, btnCancel, newVideosContainer, randomVideosContainer, videoPlayer, playerTitle, playerUploader, playerVideos, diSearch, searchVideos, txtSearch, btnSearch, txtComment, txtUsername, btnComment, commentSection, playerDescription } from "./references.js"
 
 btnUpload.addEventListener("click", () => {
     diUpload.showModal() 
@@ -93,6 +93,52 @@ getPosts()
 
 btnSearch.addEventListener("click", () => {
     search()
+})
+
+onAuthStateChanged(auth, (user) => {
+    btnLikes.onclick = () => {
+        diLikes.showModal()
+        get(ref(db, "Videos")).then((snap) => {
+            snap.forEach((video) => {
+                get(ref(db, "Videos/" + video.key + "/Likes/" + user.uid)).then((snap) => {
+                    if (snap.exists()) {
+                        const videoContainer = document.createElement("div")
+                        videoContainer.className = "video"
+                
+                        const vidElement = document.createElement("video")
+                        vidElement.className = "thumbnail"
+                        vidElement.src = video.val().Video
+                
+                        const vidTitle = document.createElement("h5")
+                        vidTitle.className = "videoTitle"
+                        vidTitle.innerText = video.val().Title
+                
+                        vidTitle.addEventListener("click", () => {
+                            currentVideo = video.key
+                            videoPlayer.src = video.val().Video
+                            playerTitle.innerText = video.val().Title
+                            playerUploader.innerText = video.val().Uploader
+                            playerDescription.innerText = video.val().Description
+                            getRandom()
+                            getComments()
+                            getLikes()
+                            getDislikes()
+                            diViewer.showModal()
+                        })
+                
+                        const vidUploader = document.createElement("p")
+                        vidUploader.className = "videoUploader"
+                        vidUploader.innerText = video.val().Uploader
+                
+                        videoContainer.appendChild(vidElement)
+                        videoContainer.appendChild(vidTitle)
+                        videoContainer.appendChild(vidUploader)
+                        likedVideos.prepend(videoContainer)
+                    }
+                })  
+            })
+        })
+    }
 })
 
 get(query(ref(db, "Videos"), limitToLast(5))).then((snap) => {

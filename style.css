@@ -8,18 +8,34 @@ body {
     background-image: url("https://s3.envato.com/files/103536582/image_preview/03_gray_backgrounds.jpg");
 }
 nav {
-    background-color: rgb(174, 205, 255);
-    background-image: linear-gradient(rgb(255, 255, 255), rgb(158, 214, 251));
-    border-style: groove;
-    border-color: rgb(139, 167, 201);
-    border-width: 1px;
-    padding-left: 12px;
-    padding-right: 12px;
-    border-radius: 7px;
+    background-color: transparent;
 }
+
+.navOption {
+    padding: 8px;
+    background-image: linear-gradient(rgb(145, 145, 242), rgb(164, 164, 236), rgba(99, 99, 221, 0.007));
+    display: inline-block;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgba(73, 67, 153, 0.395);
+    border-bottom-style: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    color: rgb(46, 60, 95);
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.navOption:hover {
+    background-image: linear-gradient(rgb(203, 203, 235), rgb(166, 166, 235), rgba(94, 94, 176, 0.162));
+    text-decoration: underline;
+}
+
 .top {
     display: flex;
-    margin-bottom: 6px;
+    margin-bottom: 70px;
 }
 .searchContainer {
     padding: 5px;
