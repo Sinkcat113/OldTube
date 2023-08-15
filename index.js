@@ -230,57 +230,61 @@ btnFile.addEventListener("click", () => {
     input.click()
     
     input.onchange = (e) => {   
-        btnFile.innerText = input.value
-        Files = e.target.files
-        storageRef = sRef(storage, "Vidoes/" + input.value)
-
-        btnStart.addEventListener("click", () => {
-            if (input.value !== "" && txtTitle.value !== "" && txtUploader.value !== "" && txtDesc.value !== "") {
-                txtTitle.disabled = true
-                txtUploader.disabled = true
-                txtDesc.disabled = true
-                btnFile.disabled = true
-                btnStart.disabled = true
-                btnCancel.disabled = true
-                btnStart.innerText = "Uploading..."
-
-                var uploadTask = uploadBytesResumable(storageRef, Files[0])
-
-                uploadTask.on("state_changed", (snap) => {
-                    btnStart.innerText = `${parseInt((snap.bytesTransferred / snap.totalBytes) * 100)}%` 
-                })
-
-                uploadBytes(storageRef, Files[0]).then(() => {
-                    getDownloadURL(storageRef).then((url) => {
-                        push(ref(db, "Videos"), {
-                            Title: txtTitle.value,
-                            Uploader: txtUploader.value,
-                            Description: txtDesc.value,
-                            Video: url
-                        }).then(() => {
-                            window.location.reload()
-                        })
+        if (input.files[0].size < 500000000) {
+            btnFile.innerText = input.value
+            Files = e.target.files
+            storageRef = sRef(storage, "Vidoes/" + input.value)
+    
+            btnStart.addEventListener("click", () => {
+                if (input.value !== "" && txtTitle.value !== "" && txtUploader.value !== "" && txtDesc.value !== "") {
+                    txtTitle.disabled = true
+                    txtUploader.disabled = true
+                    txtDesc.disabled = true
+                    btnFile.disabled = true
+                    btnStart.disabled = true
+                    btnCancel.disabled = true
+                    btnStart.innerText = "Uploading..."
+    
+                    var uploadTask = uploadBytesResumable(storageRef, Files[0])
+    
+                    uploadTask.on("state_changed", (snap) => {
+                        btnStart.innerText = `${parseInt((snap.bytesTransferred / snap.totalBytes) * 100)}%` 
                     })
-                }).catch((error) => {
-                    const alert = document.createElement("p")
-                    alert.style.backgroundColor = "red"
-                    alert.style.color = "white"
-                    alert.style.fontFamily = "sans-serif"
-                    alert.innerText = "There was an error while uploading: " + error
-
-                    txtTitle.disabled = false
-                    txtUploader.disabled = false
-                    txtDesc.disabled = false
-                    btnFile.disabled = false
-                    btnStart.disabled = false
-                    btnCancel.disabled = false
-                    btnStart.innerText = "Upload"
-
-                    diUpload.appendChild(alert)
-                    console.error(error)
-                })
-            }
-        })
+    
+                    uploadBytes(storageRef, Files[0]).then(() => {
+                        getDownloadURL(storageRef).then((url) => {
+                            push(ref(db, "Videos"), {
+                                Title: txtTitle.value,
+                                Uploader: txtUploader.value,
+                                Description: txtDesc.value,
+                                Video: url
+                            }).then(() => {
+                                window.location.reload()
+                            })
+                        })
+                    }).catch((error) => {
+                        const alert = document.createElement("p")
+                        alert.style.backgroundColor = "red"
+                        alert.style.color = "white"
+                        alert.style.fontFamily = "sans-serif"
+                        alert.innerText = "There was an error while uploading: " + error
+    
+                        txtTitle.disabled = false
+                        txtUploader.disabled = false
+                        txtDesc.disabled = false
+                        btnFile.disabled = false
+                        btnStart.disabled = false
+                        btnCancel.disabled = false
+                        btnStart.innerText = "Upload"
+    
+                        diUpload.appendChild(alert)
+                        console.error(error)
+                    })
+                }
+            })
+        } else {
+            alert("Video file is too big must be 500 MB or below")
+        }
     }
 })
 
