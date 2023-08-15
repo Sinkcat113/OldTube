@@ -2,21 +2,23 @@ if (window.innerWidth < 600) {
     document.body.innerText = "OldTube is best viewed on a desktop computer"
 }
 
-import { btnFullScreen, scrubBar, btnPlay, guestList, btnPost, txtGuestName, txtMessage, diViewer, diUpload, btnUpload, btnFile, txtTitle, txtDesc, txtUploader, btnStart, btnCancel, newVideosContainer, randomVideosContainer, videoPlayer, playerTitle, playerUploader, playerVideos, diSearch, searchVideos, txtSearch, btnSearch, txtComment, txtUsername, btnComment, commentSection, playerDescription } from "./references.js"
+import { btnDislike, btnLike, btnFullScreen, scrubBar, btnPlay, guestList, btnPost, txtGuestName, txtMessage, diViewer, diUpload, btnUpload, btnFile, txtTitle, txtDesc, txtUploader, btnStart, btnCancel, newVideosContainer, randomVideosContainer, videoPlayer, playerTitle, playerUploader, playerVideos, diSearch, searchVideos, txtSearch, btnSearch, txtComment, txtUsername, btnComment, commentSection, playerDescription } from "./references.js"
 
 btnUpload.addEventListener("click", () => {
-    diUpload.showModal()
+    diUpload.showModal() 
 })
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-import { getDatabase, push, ref, get, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
-import { getStorage, uploadBytes, ref as sRef, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-storage.js";
+import { getDatabase, push, ref, get, query, limitToLast, remove, update } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+import { getStorage, uploadBytes, ref as sRef, getDownloadURL, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-storage.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
 
 import { firebaseConfig } from "./firebase.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app)
 const storage = getStorage(app)
+const auth = getAuth(app)
 
 var Files = []
 var storageRef
@@ -114,6 +116,8 @@ get(query(ref(db, "Videos"), limitToLast(5))).then((snap) => {
             playerDescription.innerText = video.val().Description
             getRandom()
             getComments()
+            getLikes()
+            getDislikes()
             diViewer.showModal()
         })
 
@@ -156,6 +160,8 @@ get(ref(db, "Videos")).then((snap) => {
                 playerDescription.innerText = snap.val().Description
                 getRandom()
                 getComments()
+                getLikes()
+                getDislikes()
                 diViewer.showModal()
             })
 
@@ -191,6 +197,12 @@ btnFile.addEventListener("click", () => {
                 btnStart.disabled = true
                 btnCancel.disabled = true
                 btnStart.innerText = "Uploading..."
+
+                var uploadTask = uploadBytesResumable(storageRef, Files[0])
+
+                uploadTask.on("state_changed", (snap) => {
+                    btnStart.innerText = `${parseInt((snap.bytesTransferred / snap.totalBytes) * 100)}%` 
+                })
 
                 uploadBytes(storageRef, Files[0]).then(() => {
                     getDownloadURL(storageRef).then((url) => {
@@ -252,6 +264,8 @@ function search() {
                         playerDescription.innerText = video.val().Description
                         getRandom()
                         getComments()
+                        getLikes()
+                        getDislikes()
                         diViewer.showModal()
                     })
 
@@ -354,6 +368,8 @@ function getRandom() {
                     playerDescription.innerText = snap.val().Description
                     getRandom()
                     getComments()
+                    getLikes()
+                    getDislikes()
                     diViewer.showModal()
                 })
 
@@ -369,3 +385,79 @@ function getRandom() {
         }
     })
 }
+
+function getLikes() {
+    var likes = 0
+
+    get(ref(db, "Videos/" + currentVideo + "/Likes")).then((snap) => {
+        snap.forEach(() => {
+            likes += 1
+        })
+    }).then(() => {
+        btnLike.innerHTML = `<img class="likedislikeButton" src="like.png" alt=""> Like (${likes})`
+    })
+}
+
+function getDislikes() {
+    var dislikes = 0
+
+    get(ref(db, "Videos/" + currentVideo + "/Dislikes")).then((snap) => {
+        snap.forEach(() => {
+            dislikes += 1
+        })
+    }).then(() => {
+        btnDislike.innerHTML = `<img class="likedislikeButton" src="Dislike.png" alt=""> Dislike (${dislikes})`
+    })
+}
+
+signInAnonymously(auth).then(() => {
+    onAuthStateChanged(auth, (user) => {
+        btnLike.onclick = () => {
+            get(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then((snap) => {
+                if (snap.exists()) {
+                    remove(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then(() => {
+                        getDislikes()
+                        getLikes()
+                    })
+                }
+            })
+            get(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then((snap) => {
+                if (snap.exists()) {
+                    remove(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then(() => {
+                        getLikes()
+                    })
+                } else if (!snap.exists()) {
+                    update(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid), {
+                        UID: `${user.uid}`
+                    }).then(() => {
+                        getLikes()
+                    })
+                }
+            })
+        }
+
+        btnDislike.onclick = () => {
+            get(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then((snap) => {
+                if (snap.exists()) {
+                    remove(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then(() => {
+                        getDislikes()
+                        getLikes()
+                    })
+                }
+            })
+            get(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then((snap) => {
+                if (snap.exists()) {
+                    remove(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then(() => {
+                        getDislikes()
+                    })
+                } else if (!snap.exists()) {
+                    update(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid), {
+                        UID: `${user.uid}`
+                    }).then(() => {
+                        getDislikes()
+                    })
+                }
+            })
+        }
+    })
+})

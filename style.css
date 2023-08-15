@@ -171,3 +171,42 @@ a {
 .playerControls {
     background-image: linear-gradient(rgb(12, 12, 12), rgb(76, 76, 76));
 }
+
+#btnLike {
+    background-image: linear-gradient(white, rgb(229, 229, 229));
+    border-radius: 4px;
+    border-style: groove;
+    border-width: 1px;
+    padding: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: pointer;
+    border-color: rgb(212, 212, 212);
+}
+
+#btnLike:hover {
+    background-image: linear-gradient(rgb(255, 255, 255), rgb(194, 194, 194));
+    border-color: rgb(168, 168, 168);
+}
+
+#btnDislike {
+    background-image: linear-gradient(white, rgb(229, 229, 229));
+    border-radius: 4px;
+    border-style: groove;
+    border-width: 1px;
+    padding: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: pointer;
+    border-color: rgb(212, 212, 212);
+}
+
+#btnDislike:hover {
+    background-image: linear-gradient(rgb(255, 255, 255), rgb(194, 194, 194));
+    border-color: rgb(168, 168, 168);
+}
+
+.likedislikeButton {
+    width: 15px;
+    height: 15px;
+}
