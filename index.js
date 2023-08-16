@@ -2,16 +2,12 @@ if (window.innerWidth < 600) {
     document.body.innerText = "OldTube is best viewed on a desktop computer"
 }
 
-import { txtViews, subscribed, likedVideos, diLikes, diSubscriptions, btnLikes, btnDislike, btnLike, btnFullScreen, scrubBar, btnPlay, guestList, btnPost, txtGuestName, txtMessage, diViewer, diUpload, btnUpload, btnFile, txtTitle, txtDesc, txtUploader, btnStart, btnCancel, newVideosContainer, randomVideosContainer, videoPlayer, playerTitle, playerUploader, playerVideos, diSearch, searchVideos, txtSearch, btnSearch, txtComment, txtUsername, btnComment, commentSection, playerDescription } from "./references.js"
-
-btnUpload.addEventListener("click", () => {
-    diUpload.showModal() 
-})
+import { diProfile, videoList, profileName, imgProfilePfp, imgPfp, btnAccount, txtViews, subscribed, likedVideos, diLikes, diSubscriptions, btnLikes, btnDislike, btnLike, btnFullScreen, scrubBar, btnPlay, guestList, btnPost, txtMessage, diViewer, diUpload, btnUpload, btnFile, txtTitle, txtDesc, btnStart, btnCancel, newVideosContainer, randomVideosContainer, videoPlayer, playerTitle, playerUploader, playerVideos, diSearch, searchVideos, txtSearch, btnSearch, txtComment, btnComment, commentSection, playerDescription } from "./references.js"
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
 import { getDatabase, push, ref, get, query, limitToLast, remove, update } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
 import { getStorage, uploadBytes, ref as sRef, getDownloadURL, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-storage.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-auth.js";
 
 import { firebaseConfig } from "./firebase.js";
 
@@ -20,41 +16,49 @@ const db = getDatabase(app)
 const storage = getStorage(app)
 const auth = getAuth(app)
 
+const provider = new GoogleAuthProvider()
+
 var Files = []
 var storageRef
 
 var currentVideo = ""
+var currentUser = ""
 
-if (localStorage.username !== undefined) {
-    txtUsername.value = localStorage.username
-}
-
-txtUsername.addEventListener("keyup", () => {
-    localStorage.username = txtUsername.value
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        btnUpload.disabled = false
+        btnUpload.addEventListener("click", () => {
+            diUpload.showModal() 
+        })
+    }
 })
 
 btnComment.addEventListener("click", () => {
-    if (txtComment.value !== "" && txtUsername.value !== "" && currentVideo !== "") {
-        push(ref(db, "Videos/" + currentVideo + "/Comments"), {
-            Author: txtUsername.value,
-            Message: txtComment.value
-        }).then(() => {
-            txtComment.value = ""
-            getComments()
-        })
-    }
+    onAuthStateChanged(auth, (user) => {
+        if (txtComment.value !== "" && currentVideo !== "") {
+            push(ref(db, "Videos/" + currentVideo + "/Comments"), {
+                Author: user.displayName,
+                Message: txtComment.value
+            }).then(() => {
+                txtComment.value = ""
+                getComments()
+            })
+        }
+    })
 })
 
 btnPost.addEventListener("click", () => {
-    if (txtMessage.value !== "" && txtGuestName.value !== "") {
-        push(ref(db, "GuestList"), {
-            Author: txtUsername.value,
-            Message: txtMessage.value
-        }).then(() => {
-            txtMessage.value = ""
-            getPosts()
-        })
-    }
+    onAuthStateChanged(auth, (user) => {
+        if (txtMessage.value !== "") {
+            push(ref(db, "GuestList"), {
+                Author: user.displayName,
+                Message: txtMessage.value
+            }).then(() => {
+                txtMessage.value = ""
+                getPosts()
+            })
+        }
+    })
 })
 
 var playing = false
@@ -117,7 +121,13 @@ onAuthStateChanged(auth, (user) => {
                             currentVideo = video.key
                             videoPlayer.src = video.val().Video
                             playerTitle.innerText = video.val().Title
+                            get(ref(db, "Users/" + video.val().Uploader)).then((snap) => {
+                                imgPfp.src = snap.val().Pfp
+                            })
                             playerUploader.innerText = video.val().Uploader
+                            playerUploader.onclick = () => {
+                                getUser()
+                            }
                             playerDescription.innerText = video.val().Description
                             getRandom()
                             getComments()
@@ -158,7 +168,13 @@ get(query(ref(db, "Videos"), limitToLast(5))).then((snap) => {
             currentVideo = video.key
             videoPlayer.src = video.val().Video
             playerTitle.innerText = video.val().Title
+            get(ref(db, "Users/" + video.val().Uploader)).then((snap) => {
+                imgPfp.src = snap.val().Pfp
+            })
             playerUploader.innerText = video.val().Uploader
+            playerUploader.onclick = () => {
+                getUser()
+            }
             playerDescription.innerText = video.val().Description
             getRandom()
             getComments()
@@ -202,7 +218,13 @@ get(ref(db, "Videos")).then((snap) => {
                 currentVideo = snap.key
                 videoPlayer.src = snap.val().Video
                 playerTitle.innerText = snap.val().Title
+                get(ref(db, "Users/" + snap.val().Uploader)).then((snap) => {
+                    imgPfp.src = snap.val().Pfp
+                })
                 playerUploader.innerText = snap.val().Uploader
+                playerUploader.onclick = () => {
+                    getUser()
+                }
                 playerDescription.innerText = snap.val().Description
                 getRandom()
                 getComments()
@@ -223,72 +245,76 @@ get(ref(db, "Videos")).then((snap) => {
     }
 })
 
-btnFile.addEventListener("click", () => {
-    const input = document.createElement("input")
-    input.type = "file"
-    input.accept = ".mp4"
-    input.click()
-    
-    input.onchange = (e) => {   
-        if (input.files[0].size < 500000000) {
-            btnFile.innerText = input.value
-            Files = e.target.files
-            storageRef = sRef(storage, "Vidoes/" + input.value)
-    
-            btnStart.addEventListener("click", () => {
-                if (input.value !== "" && txtTitle.value !== "" && txtUploader.value !== "" && txtDesc.value !== "") {
-                    txtTitle.disabled = true
-                    txtUploader.disabled = true
-                    txtDesc.disabled = true
-                    btnFile.disabled = true
-                    btnStart.disabled = true
-                    btnCancel.disabled = true
-                    btnStart.innerText = "Uploading..."
-    
-                    var uploadTask = uploadBytesResumable(storageRef, Files[0])
-    
-                    uploadTask.on("state_changed", (snap) => {
-                        btnStart.innerText = `${parseInt((snap.bytesTransferred / snap.totalBytes) * 100)}%` 
-                    })
-    
-                    uploadBytes(storageRef, Files[0]).then(() => {
-                        getDownloadURL(storageRef).then((url) => {
-                            push(ref(db, "Videos"), {
-                                Title: txtTitle.value,
-                                Uploader: txtUploader.value,
-                                Description: txtDesc.value,
-                                Video: url
-                            }).then(() => {
-                                window.location.reload()
-                            })
+onAuthStateChanged(auth, (user) => {
+    btnFile.addEventListener("click", () => {
+        const input = document.createElement("input")
+        input.type = "file"
+        input.accept = ".mp4"
+        input.click()
+        
+        input.onchange = (e) => {   
+            if (input.files[0].size < 500000000) {
+                btnFile.innerText = input.value
+                Files = e.target.files
+                storageRef = sRef(storage, "Vidoes/" + input.value)
+        
+                btnStart.addEventListener("click", () => {
+                    if (input.value !== "" && txtTitle.value !== "" && txtDesc.value !== "") {
+                        txtTitle.disabled = true
+                        txtDesc.disabled = true
+                        btnFile.disabled = true
+                        btnStart.disabled = true
+                        btnCancel.disabled = true
+                        btnStart.innerText = "Uploading..."
+        
+                        var uploadTask = uploadBytesResumable(storageRef, Files[0])
+        
+                        uploadTask.on("state_changed", (snap) => {
+                            btnStart.innerText = `${parseInt((snap.bytesTransferred / snap.totalBytes) * 100)}%` 
                         })
-                    }).catch((error) => {
-                        const alert = document.createElement("p")
-                        alert.style.backgroundColor = "red"
-                        alert.style.color = "white"
-                        alert.style.fontFamily = "sans-serif"
-                        alert.innerText = "There was an error while uploading: " + error
-    
-                        txtTitle.disabled = false
-                        txtUploader.disabled = false
-                        txtDesc.disabled = false
-                        btnFile.disabled = false
-                        btnStart.disabled = false
-                        btnCancel.disabled = false
-                        btnStart.innerText = "Upload"
-    
-                        diUpload.appendChild(alert)
-                        console.error(error)
-                    })
-                }
-            })
-        } else {
-            alert("Video file is too big must be 500 MB or below")
+        
+                        uploadBytes(storageRef, Files[0]).then(() => {
+                            getDownloadURL(storageRef).then((url) => {
+                                push(ref(db, "Videos"), {
+                                    Title: txtTitle.value,
+                                    Uploader: user.displayName,
+                                    Description: txtDesc.value,
+                                    Video: url
+                                }).then(() => {
+                                    window.location.reload()
+                                })
+                            })
+                        }).catch((error) => {
+                            const alert = document.createElement("p")
+                            alert.style.backgroundColor = "red"
+                            alert.style.color = "white"
+                            alert.style.fontFamily = "sans-serif"
+                            alert.innerText = "There was an error while uploading: " + error
+        
+                            txtTitle.disabled = false
+                            txtDesc.disabled = false
+                            btnFile.disabled = false
+                            btnStart.disabled = false
+                            btnCancel.disabled = false
+                            btnStart.innerText = "Upload"
+        
+                            diUpload.appendChild(alert)
+                            console.error(error)
+                        })
+                    }
+                })
+            } else {
+                alert("Video file is too big must be 500 MB or below try recording at a lower resolution")
+            }
         }
-    }
+    })
 })
 
 function search() {
+    diLikes.close()
+    diProfile.close()
+    diViewer.close()
+    diUpload.close()
     if (txtSearch.value !== "") {
         diSearch.showModal()
         searchVideos.innerHTML = ""
@@ -310,7 +336,13 @@ function search() {
                         currentVideo = video.key
                         videoPlayer.src = video.val().Video
                         playerTitle.innerText = video.val().Title
+                        get(ref(db, "Users/" + video.val().Uploader)).then((snap) => {
+                            imgPfp.src = snap.val().Pfp
+                        })
                         playerUploader.innerText = video.val().Uploader
+                        playerUploader.onclick = () => {
+                            getUser()
+                        }
                         playerDescription.innerText = video.val().Description
                         getRandom()
                         getComments()
@@ -387,7 +419,64 @@ function getPosts() {
     })
 }
 
+function getUser() {
+    get(ref(db, "Users/" + playerUploader.innerText)).then((snap) => {
+        diProfile.showModal()
+        imgProfilePfp.src = snap.val().Pfp
+        profileName.innerText = snap.val().DisplayName
+        videoList.innerHTML = ""
+        get(ref(db, "Videos")).then((snap) => {
+            snap.forEach((video) => {
+                if (video.val().Uploader == profileName.innerText) {
+                    const videoContainer = document.createElement("div")
+                    videoContainer.className = "video"
+    
+                    const vidElement = document.createElement("video")
+                    vidElement.className = "thumbnail"
+                    vidElement.src = video.val().Video
+    
+                    const vidTitle = document.createElement("h5")
+                    vidTitle.className = "videoTitle"
+                    vidTitle.innerText = video.val().Title
+    
+                    vidTitle.addEventListener("click", () => {
+                        currentVideo = video.key
+                        videoPlayer.src = video.val().Video
+                        playerTitle.innerText = video.val().Title
+                        get(ref(db, "Users/" + video.val().Uploader)).then((snap) => {
+                            imgPfp.src = snap.val().Pfp
+                        })
+                        playerUploader.innerText = video.val().Uploader
+                        playerUploader.onclick = () => {
+                            getUser()
+                        }
+                        playerDescription.innerText = video.val().Description
+                        getRandom()
+                        getComments()
+                        getLikes()
+                        getDislikes()
+                        diViewer.showModal()
+                    })
+    
+                    const vidUploader = document.createElement("p")
+                    vidUploader.className = "videoUploader"
+                    vidUploader.innerText = video.val().Uploader
+    
+                    videoContainer.appendChild(vidElement)
+                    videoContainer.appendChild(vidTitle)
+                    videoContainer.appendChild(vidUploader)
+                    videoList.prepend(videoContainer)
+                }
+            })
+        })
+    })
+}
+
 function getRandom() {
+    diLikes.close()
+    diProfile.close()
+    diSearch.close()
+    diUpload.close()
     playerVideos.innerHTML = ""
 
     var selection = []
@@ -415,6 +504,12 @@ function getRandom() {
                     videoPlayer.src = snap.val().Video
                     playerTitle.innerText = snap.val().Title
                     playerUploader.innerText = snap.val().Uploader
+                    playerUploader.onclick = () => {
+                        getUser()
+                    }
+                    get(ref(db, "Users/" + snap.val().Uploader)).then((snap) => {
+                        imgPfp.src = snap.val().Pfp
+                    })
                     playerDescription.innerText = snap.val().Description
                     getRandom()
                     getComments()
@@ -437,6 +532,12 @@ function getRandom() {
 }
 
 function getLikes() {
+
+    diProfile.close()
+    diViewer.close()
+    diUpload.close()
+    diSearch.close()
+
 
     // add views
 
@@ -483,54 +584,124 @@ function getDislikes() {
     })
 }
 
-signInAnonymously(auth).then(() => {
-    onAuthStateChanged(auth, (user) => {
-        btnLike.onclick = () => {
-            get(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then((snap) => {
-                if (snap.exists()) {
-                    remove(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then(() => {
-                        getDislikes()
-                        getLikes()
-                    })
-                }
-            })
-            get(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then((snap) => {
-                if (snap.exists()) {
-                    remove(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then(() => {
-                        getLikes()
-                    })
-                } else if (!snap.exists()) {
-                    update(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid), {
-                        UID: `${user.uid}`
-                    }).then(() => {
-                        getLikes()
-                    })
-                }
-            })
-        }
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user.displayName
+        btnAccount.innerText = `${user.displayName}`
+    }
+})
 
-        btnDislike.onclick = () => {
-            get(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then((snap) => {
-                if (snap.exists()) {
-                    remove(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then(() => {
-                        getDislikes()
-                        getLikes()
-                    })
-                }
+btnAccount.addEventListener("click", () => {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user.displayName
+            btnAccount.innerText = `${user.displayName}`
+            diProfile.showModal()
+            imgProfilePfp.src = user.photoURL
+            profileName.innerText = user.displayName
+            get(ref(db, "Videos")).then((snap) => {
+                snap.forEach((video) => {
+                    if (video.val().Uploader == user.displayName) {
+                        const videoContainer = document.createElement("div")
+                        videoContainer.className = "video"
+    
+                        const vidElement = document.createElement("video")
+                        vidElement.className = "thumbnail"
+                        vidElement.src = video.val().Video
+    
+                        const vidTitle = document.createElement("h5")
+                        vidTitle.className = "videoTitle"
+                        vidTitle.innerText = video.val().Title
+    
+                        vidTitle.addEventListener("click", () => {
+                            currentVideo = video.key
+                            videoPlayer.src = video.val().Video
+                            playerTitle.innerText = video.val().Title
+                            get(ref(db, "Users/" + video.val().Uploader)).then((snap) => {
+                                imgPfp.src = snap.val().Pfp
+                            })
+                            playerUploader.innerText = video.val().Uploader
+                            playerUploader.onclick = () => {
+                                getUser()
+                            }
+                            playerDescription.innerText = video.val().Description
+                            getRandom()
+                            getComments()
+                            getLikes()
+                            getDislikes()
+                            diViewer.showModal()
+                        })
+    
+                        const vidUploader = document.createElement("p")
+                        vidUploader.className = "videoUploader"
+                        vidUploader.innerText = video.val().Uploader
+    
+                        videoContainer.appendChild(vidElement)
+                        videoContainer.appendChild(vidTitle)
+                        videoContainer.appendChild(vidUploader)
+                        videoList.prepend(videoContainer)
+                    }
+                })
             })
-            get(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then((snap) => {
-                if (snap.exists()) {
-                    remove(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then(() => {
-                        getDislikes()
-                    })
-                } else if (!snap.exists()) {
-                    update(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid), {
-                        UID: `${user.uid}`
-                    }).then(() => {
-                        getDislikes()
-                    })
-                }
+        } else {
+            signInWithPopup(auth, provider).then((result) => {
+                update(ref(db, "Users/" + result.user.displayName), {
+                    UID: `${result.user.uid}`,
+                    DisplayName: `${result.user.displayName}`,
+                    Pfp: `${result.user.photoURL}`
+                })
+                window.location.reload()
             })
         }
     })
+})
+
+onAuthStateChanged(auth, (user) => {
+    btnLike.onclick = () => {
+        get(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then((snap) => {
+            if (snap.exists()) {
+                remove(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then(() => {
+                    getDislikes()
+                    getLikes()
+                })
+            }
+        })
+        get(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then((snap) => {
+            if (snap.exists()) {
+                remove(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then(() => {
+                    getLikes()
+                })
+            } else if (!snap.exists()) {
+                update(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid), {
+                    UID: `${user.uid}`
+                }).then(() => {
+                    getLikes()
+                })
+            }
+        })
+    }
+
+    btnDislike.onclick = () => {
+        get(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then((snap) => {
+            if (snap.exists()) {
+                remove(ref(db, "Videos/" + currentVideo + "/Likes/" + user.uid)).then(() => {
+                    getDislikes()
+                    getLikes()
+                })
+            }
+        })
+        get(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then((snap) => {
+            if (snap.exists()) {
+                remove(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid)).then(() => {
+                    getDislikes()
+                })
+            } else if (!snap.exists()) {
+                update(ref(db, "Videos/" + currentVideo + "/Dislikes/" + user.uid), {
+                    UID: `${user.uid}`
+                }).then(() => {
+                    getDislikes()
+                })
+            }
+        })
+    }
 })

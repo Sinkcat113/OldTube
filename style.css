@@ -28,6 +28,11 @@ nav {
     margin-right: auto;
 }
 
+.navOption:disabled {
+    background-image: linear-gradient(rgb(218, 218, 218), rgb(184, 184, 184), rgba(140, 140, 140, 0.162));
+    color: gray;
+}
+
 .navOption:hover {
     background-image: linear-gradient(rgb(203, 203, 235), rgb(166, 166, 235), rgba(94, 94, 176, 0.162));
     text-decoration: underline;
@@ -225,4 +230,28 @@ a {
 .likedislikeButton {
     width: 15px;
     height: 15px;
+}
+
+.pfp {
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
+    float: left;
+}
+
+#playerUploader {
+    cursor: pointer;
+}
+
+#playerUploader:hover {
+    color: rgb(72, 99, 255);
+    text-decoration: underline;
+}
+
+.profileVideoList {
+    margin: 0;
+    border-style: none;
+    border-bottom-style: solid;
+    border-width: 1px;
+    border-color: black;
 }

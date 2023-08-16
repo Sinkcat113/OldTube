@@ -23,6 +23,7 @@
     <nav>
         <h4 class="navOption">Home</h4>
         <h4 class="navOption" id="btnLikes">Your Likes</h4>
+        <h4 class="navOption" id="btnAccount">Account</h4>
         <h4 class="navOption" id="btnUpload">Upload</h4>
     </nav>
     <div style="float: left; width: 590px;">
@@ -53,15 +54,14 @@
     </div>
     <div style="float: right; width: 200px;">
         <div class="title">
-            <h5>Join the guest list</h5>
+            <h5>Type a message</h5>
             <div class="guestListControl">
-                <input type="text" id="txtGuestName" placeholder="Name">
                 <textarea style="font-family: sans-serif; resize: vertical;" id="txtMessage" cols="22" rows="3" placeholder="Message"></textarea>
                 <button id="btnPost">Post</button>
             </div>
         </div>
         <div class="title">
-            <h5>Guest list</h5>
+            <h5>Message board</h5>
             <div style="background-color: white;" class="guestList">
 
             </div>
@@ -81,11 +81,6 @@
             <input type="text" id="txtTitle" placeholder="Video Title">
             <br>
             <br>
-            <label for="txtUploader">Uploader: </label>
-            <br>
-            <input type="text" id="txtUploader" placeholder="Your Name">
-            <br>
-            <br>
             <label for="txtDesc">Description: </label>
             <br>
             <textarea style="font-family: sans-serif;" name="" id="txtDesc" cols="30" rows="7" placeholder="Vidoe Description"></textarea>
@@ -99,7 +94,7 @@
     <dialog id="diViewer">
         <div style="display: flex;">
             <div style="float: left;">
-                <div class="top">
+                <div class="topper">
                     <img class="logo" src="oldTube.png" alt="">
                 </div>
                 <a href="index.html"><-- Exit</a>
@@ -117,7 +112,10 @@
                 <br>
                 <h4 style="display: inline-block;" id="playerTitle"></h4>
                 <br>
-                <p style="margin: 0; display: inline-block;" id="playerUploader"></p>
+                <div class="uploaderInfo">
+                    <img class="pfp" id="imgPfp" alt="Profile picture">
+                    <p style="margin: 0; display: inline-block; margin-top: 5px;" id="playerUploader"></p>
+                </div>
                 <br>
                 <br>
                 <h5 id="txtViews"></h5>
@@ -137,9 +135,6 @@
                         Comments
                     </h4>
                     <div class="commentControls">
-                        <input type="text" id="txtUsername" placeholder="Name">
-                        <br>
-                        <br>
                         <textarea style="font-family: sans-serif; resize: vertical;" id="txtComment" placeholder="Comment" cols="100" rows="2"></textarea>
                         <br>
                         <button id="btnComment">Comment</button>
@@ -193,6 +188,24 @@
         <div class="likedVideos">
 
         </div>
+    </dialog>
+    <dialog id="diProfile">
+        <a href="index.html"><-- Exit</a>
+        <div class="top">
+            <img class="logo" src="oldTube.png" alt="">
+        </div>
+        <div class="profileDetails">
+            <div class="uploaderInfo">
+                <img class="pfp" id="imgProfilePfp" alt="Profile picture">
+                <p style="margin: 0; display: inline-block; margin-top: 5px;" id="profileName"></p>
+            </div>
+        </div>
+        <br>
+        <br>
+        <h5 class="profileVideoList">Videos</h5>
+        <div class="videoList">
+
+        </div>  
     </dialog>
     <div style="margin-left: 200px; margin-right: 200px;">
         <p style="color: gray; text-align: center;">©️ OldTube 2023</p>
