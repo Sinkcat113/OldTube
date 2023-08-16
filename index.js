@@ -534,7 +534,6 @@ function getRandom() {
 function getLikes() {
 
     diProfile.close()
-    diViewer.close()
     diUpload.close()
     diSearch.close()
 
