@@ -28,14 +28,16 @@ nav {
     margin-right: auto;
 }
 
-.navOption:disabled {
-    background-image: linear-gradient(rgb(218, 218, 218), rgb(184, 184, 184), rgba(140, 140, 140, 0.162));
-    color: gray;
-}
-
 .navOption:hover {
     background-image: linear-gradient(rgb(203, 203, 235), rgb(166, 166, 235), rgba(94, 94, 176, 0.162));
     text-decoration: underline;
+}
+
+.navOption:disabled {
+    background-image: linear-gradient(rgb(218, 218, 218), rgb(184, 184, 184), rgba(140, 140, 140, 0.162));
+    color: gray;
+    border-color: gray;
+    opacity: 60%;
 }
 
 .top {

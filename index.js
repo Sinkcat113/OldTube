@@ -372,10 +372,16 @@ function getComments() {
             const container = document.createElement("div")
             container.style.borderWidth = "1px"
             container.style.borderLeftWidth = "3px"
-            container.style.borderColor = "transparent"
-            container.style.borderLeftColor = "gray"
+            container.style.borderStyle = "none"
             container.style.paddingLeft = "5px"
-            container.style.borderStyle = "solid"
+
+            const pfp = document.createElement("img")
+            pfp.className = "pfp"
+            get(ref(db, "Users/" + comment.val().Author)).then((snap) => {
+                if (snap.exists()) {
+                    pfp.src = snap.val().Pfp
+                }
+            })
 
             const author = document.createElement("h4")
             author.innerText = comment.val().Author
@@ -384,7 +390,9 @@ function getComments() {
             const message = document.createElement("p")
             message.innerText = comment.val().Message
             message.style.margin = '0'
+            message.style.marginLeft = "30px"
 
+            container.appendChild(pfp)
             container.appendChild(author)
             container.appendChild(message)
             commentSection.prepend(container)
@@ -404,6 +412,14 @@ function getPosts() {
             container.style.paddingLeft = "5px"
             container.style.borderStyle = "solid"
 
+            const pfp = document.createElement("img")
+            pfp.className = "pfp"
+            get(ref(db, "Users/" + comment.val().Author)).then((snap) => {
+                if (snap.exists()) {
+                    pfp.src = snap.val().Pfp
+                }
+            })
+
             const author = document.createElement("h4")
             author.innerText = comment.val().Author
             author.style.margin = "0"
@@ -411,7 +427,9 @@ function getPosts() {
             const message = document.createElement("p")
             message.innerText = comment.val().Message
             message.style.margin = '0'
+            message.style.marginLeft = "30px"
 
+            container.appendChild(pfp)
             container.appendChild(author)
             container.appendChild(message)
             guestList.prepend(container)
@@ -584,9 +602,13 @@ function getDislikes() {
 }
 
 onAuthStateChanged(auth, (user) => {
+    btnUpload.disabled = true
+    btnLikes.disabled = true
     if (user) {
         currentUser = user.displayName
         btnAccount.innerText = `${user.displayName}`
+        btnUpload.disabled = false
+        btnLikes.disabled = false
     }
 })
 
