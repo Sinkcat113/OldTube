@@ -207,15 +207,22 @@
 
         </div>  
     </dialog>
-    <div style="margin-left: 200px; margin-right: 200px;">
+    <div style="margin-left: 100px; margin-right: 300px;">
         <p style="color: gray; text-align: center;">©️ OldTube 2023</p>
         <p style="color: gray; text-align: center;">OldTube is a project started by a high school student to bring back the old aesthetic of youtube from the early to mid 2000s</p>
         <img id="btnGitHub" style="object-fit: contain; width: 100px; height: 90px; margin-left: auto; margin-right: auto; display: block; cursor: pointer;" src="https://th.bing.com/th/id/R.7d224f70767d17f0b84b0d1a9fbefc02?rik=48gUQ0utOk%2fdXw&riu=http%3a%2f%2fwww.mozilla.cz%2fwp-content%2fuploads%2f2015%2f03%2fgithub_logo.png&ehk=AS3A28KxIcMhuHg53ev5UJJVzj6scwFVgF0vuacos1A%3d&risl=&pid=ImgRaw&r=0" alt="">
+        <br>
+        <p style="font-weight: 900; font-size: 12px; text-align: center;">Donate for server upkeep.</p>
+        <img id="btnDonate" style="object-fit: contain; width: 100px; height: 60px; margin-left: auto; margin-right: auto; display: block; cursor: pointer;" src="https://th.bing.com/th/id/R.abeb713a7c646866e187204ab974c96c?rik=IxQ3zlS4yjRlow&pid=ImgRaw&r=0" alt="">
         <script>
             let btnGitHub = document.querySelector("#btnGitHub")
+            let btnDonate = document.querySelector("#btnDonate")
 
             btnGitHub.onclick = () => {
                 window.open("https://github.com/Sinkcat113/OldTube")
+            }
+            btnDonate.onclick = () => {
+                window.open("https://www.paypal.com/donate?token=HBlKtQiQMdce7wvJ2hb4YWSs6pa2D8G-qLpzein9fS9-T8U81WG15iS-s-ML8tvjM3kFY6d7k7T1ts51&locale.x=US")
             }
         </script>
     </div>
